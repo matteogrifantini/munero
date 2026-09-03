@@ -1,12 +1,7 @@
 import Link from 'next/link';
-import { siteSchema } from '@/lib/site-schema';
-import psicologo from '@/content/templates/psicologo.json';
-import barbiere from '@/content/templates/barbiere.json';
+import { getTemplate, templateNames } from '@/lib/templates';
 
-const templates = [
-  { slug: 'psicologo', data: siteSchema.parse(psicologo) },
-  { slug: 'barbiere', data: siteSchema.parse(barbiere) },
-];
+const templates = templateNames.map((slug) => ({ slug, data: getTemplate(slug) }));
 
 export default function CatalogoPage() {
   return (
