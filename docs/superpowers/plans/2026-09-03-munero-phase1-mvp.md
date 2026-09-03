@@ -13,6 +13,7 @@
 - Zero paid providers: Supabase Free tier only, Vercel Hobby only, Gemini free tier only; no Cloudflare for SaaS in Phase 1.
 - EU Supabase project region; KV/hostname sync deferred — middleware reads Supabase directly with 30s cache.
 - AI never emits TSX/HTML; only JSON patches against `site_schema v1`; blocked outputs never reach preview.
+- Template-first: sites are preset templates filled by deterministic zero-token scripts; Gemini is used only to interpret edit intent, and common edits (prezzo, indirizzo, telefono, orari, servizi) must first try the deterministic fast path in `lib/fast-edit.ts` with zero token cost before any Gemini call.
 - Booking/health data: Phase-1 forms collect only name, contact, generic service category; free-text symptom field is forbidden and redacted server-side; bookings table is never sent to Gemini.
 - Healthcare tone: purely informative; blocklist enforced before any AI output is applied (Legge 145/2018, FNOMCeO/CNOP).
 - Each task ends with a testable deliverable and a commit; fail-closed on tenant status doubt.
@@ -492,11 +493,11 @@ git commit -m "feat: tenant renderer with middleware kill-switch"
 
 ---
 
-### Task 6: AI chat edits via Gemini free tier (guardrailed JSON patches)
+### Task 6: Template-first chat edits (zero-token fast path + Gemini fallback)
 
 **Files:**
-- Create: `app/chat/page.tsx`, `app/api/chat-edit/route.ts`, `lib/guardrail.ts`, `tests/guardrail.test.ts`
-- Test: `tests/guardrail.test.ts`
+- Create: `app/chat/page.tsx`, `app/api/chat-edit/route.ts`, `lib/guardrail.ts`, `lib/fast-edit.ts`, `tests/guardrail.test.ts`, `tests/fast-edit.test.ts`
+- Test: `tests/guardrail.test.ts`, `tests/fast-edit.test.ts`
 
 **Interfaces:**
 - Consumes: `siteSchema`, `public.site_instances`
@@ -520,6 +521,31 @@ describe('guardrail', () => {
 });
 ```
 
+```ts
+// tests/fast-edit.test.ts — zero-token deterministic path, no network
+import { describe, it, expect } from 'vitest';
+import { tryFastEdit } from '../lib/fast-edit';
+const base = { schema_version: 'v1' as const, profession: 'barbiere' as const,
+  branding: { name: 'B', primary_color: '#111111', phone: '+39 333 000 0000' },
+  hero: { title: 'T', subtitle: 'S' }, services: [{ name: 'Taglio', price: '€ 25' }],
+  address: 'Via Roma 1', legal: { nome: 'N', ordine: 'O', albo_n: '1', piva: '12345', pec: 'a@pec.it' } };
+describe('fast-edit', () => {
+  it('updates service price without tokens', () => {
+    const r = tryFastEdit(base, 'cambia il prezzo del taglio a 28 euro');
+    expect(r.matched).toBe(true);
+    expect(r.patch).toMatchObject({ services: [{ name: 'Taglio', price: '€ 28' }] });
+  });
+  it('updates address without tokens', () => {
+    const r = tryFastEdit(base, 'cambia indirizzo in Via Verdi 10, Torino');
+    expect(r.matched).toBe(true);
+    expect(r.patch).toMatchObject({ address: 'Via Verdi 10, Torino' });
+  });
+  it('passes through unknown requests to Gemini', () => {
+    expect(tryFastEdit(base, 'riscrivi la presentazione in modo più accogliente').matched).toBe(false);
+  });
+});
+```
+
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/guardrail.test.ts`
@@ -537,11 +563,35 @@ export function checkDeontology(text: string): { blocked: boolean; reason?: stri
 ```
 
 ```ts
+// lib/fast-edit.ts — deterministic zero-token slot filling (tried BEFORE any Gemini call)
+import type { SiteConfig } from './site-schema';
+export function tryFastEdit(config: SiteConfig, message: string): { matched: boolean; patch?: Record<string, unknown> } {
+  const msg = message.toLowerCase();
+  const price = msg.match(/(prezzo (?:del|della|di) )?(.+?) a (\d{1,4})\s*€?/) ?? msg.match(/(.+?) a (\d{1,4})\s*euro/);
+  if (/prezz/.test(msg) && price) {
+    const serviceName = (price[2] ?? '').trim();
+    const amount = price[3] ?? price[2];
+    const services = config.services.map(s =>
+      s.name.toLowerCase().includes(serviceName) || serviceName.includes(s.name.toLowerCase().split(' ')[0])
+        ? { ...s, price: `€ ${amount}` } : s);
+    if (services.some((s, i) => s.price !== config.services[i].price)) return { matched: true, patch: { services } };
+  }
+  const addr = message.match(/indirizzo in (.+)/i);
+  if (/indirizzo/.test(msg) && addr) return { matched: true, patch: { address: addr[1].trim() } };
+  const phone = message.match(/(?:telefono|cellulare)(?: a| in|:)?\s*(\+?[0-9][0-9 ./-]{5,})/i);
+  if (phone) return { matched: true, patch: { branding: { ...config.branding, phone: phone[1].trim() } } };
+  return { matched: false };
+}
+```
+
+```ts
 // app/api/chat-edit/route.ts (server-only; GEMINI_API_KEY never leaves server)
+// Order: guardrail → fast path (0 tokens) → Gemini fallback (minimal tokens)
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
 import { siteSchema } from '@/lib/site-schema';
 import { checkDeontology } from '@/lib/guardrail';
+import { tryFastEdit } from '@/lib/fast-edit';
 const SYSTEM = `Sei l'assistente Munero. Rispondi SOLO con un JSON patch minimo per site_schema v1 (chiavi: branding, hero, services, address). Tono puramente informativo. Vietati sconti, offerte, superlativi, confronti, promesse di risultato (Legge 145/2018). Se la richiesta viola queste regole, rispondi {"__blocked__": true}.`;
 export async function POST(req: Request) {
   const sb = supabaseServer();
@@ -552,22 +602,31 @@ export async function POST(req: Request) {
   if (pre.blocked) return NextResponse.json({ blocked: true, reason: pre.reason }, { status: 200 });
   const { data: inst } = await sb.from('site_instances').select('config').eq('tenant_id', tenantId).single();
   if (!inst) return NextResponse.json({ error: 'no site' }, { status: 404 });
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ system_instruction: { parts: [{ text: SYSTEM }] }, contents: [{ parts: [{ text: `Config attuale: ${JSON.stringify(inst.config)}\nRichiesta: ${message}` }] }], generationConfig: { temperature: 0.1, maxOutputTokens: 500 } }),
-  });
-  const j = await r.json();
-  const text: string = j.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}';
-  const cleaned = text.replace(/```json|```/g, '').trim();
+  const current = inst.config as Parameters<typeof tryFastEdit>[0];
+  // Fast path first: zero tokens for common edits
+  const fast = tryFastEdit(current, message);
   let patch: Record<string, unknown>;
-  try { patch = JSON.parse(cleaned); } catch { return NextResponse.json({ blocked: true, reason: 'Risposta AI non valida, riprova.' }, { status: 200 }); }
+  let via: 'fast' | 'gemini' = 'fast';
+  if (fast.matched) {
+    patch = fast.patch!;
+  } else {
+    via = 'gemini';
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system_instruction: { parts: [{ text: SYSTEM }] }, contents: [{ parts: [{ text: `Config attuale: ${JSON.stringify(inst.config)}\nRichiesta: ${message}` }] }], generationConfig: { temperature: 0.1, maxOutputTokens: 500 } }),
+    });
+    const j = await r.json();
+    const text: string = j.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}';
+    const cleaned = text.replace(/```json|```/g, '').trim();
+    try { patch = JSON.parse(cleaned); } catch { return NextResponse.json({ blocked: true, reason: 'Risposta AI non valida, riprova.' }, { status: 200 }); }
+  }
   if ((patch as any).__blocked__) return NextResponse.json({ blocked: true, reason: 'Richiesta non conforme al codice deontologico.' }, { status: 200 });
   const merged = siteSchema.safeParse({ ...(inst.config as object), ...patch });
   if (!merged.success) return NextResponse.json({ blocked: true, reason: 'Modifica non valida per lo schema del sito.' }, { status: 200 });
   const post = checkDeontology(JSON.stringify(patch));
   if (post.blocked) return NextResponse.json({ blocked: true, reason: post.reason }, { status: 200 });
   await sb.from('site_instances').update({ config: merged.data }).eq('tenant_id', tenantId);
-  return NextResponse.json({ patch, verdict: 'applied' });
+  return NextResponse.json({ patch, verdict: 'applied', via });
 }
 ```
 
@@ -575,14 +634,14 @@ Chat page: tenant selector (owner's sites only) + message box + result area show
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `npx vitest run tests/guardrail.test.ts`
-Expected: PASS + manual: "cambia prezzo taglio a 28€" applies; "fai sconto 20%" blocked.
+Run: `npx vitest run tests/guardrail.test.ts tests/fast-edit.test.ts`
+Expected: PASS + manual: "cambia prezzo taglio a 28€" applies via `fast` (0 tokens); "fai sconto 20%" blocked.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/chat/page.tsx app/api/chat-edit/route.ts lib/guardrail.ts tests/guardrail.test.ts
-git commit -m "feat: AI chat edits via gemini free tier with deontology guardrail"
+git add app/chat/page.tsx app/api/chat-edit/route.ts lib/guardrail.ts lib/fast-edit.ts tests/guardrail.test.ts tests/fast-edit.test.ts
+git commit -m "feat: template-first chat edits with zero-token fast path and gemini fallback"
 ```
 
 ---
