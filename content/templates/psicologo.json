@@ -1,1 +1,38 @@
-{"schema_version":"v1","profession":"psicologo","branding":{"name":"Dott.ssa Esempio","primary_color":"#2f5d50","phone":"+39 333 000 0000"},"hero":{"title":"Supporto psicologico","subtitle":"Colloqui in studio e online. Approccio informativo, senza promesse di risultato."},"services":[{"name":"Colloquio individuale (50 min)","price":"€ 60"}],"address":"Via Roma 1, Milano","legal":{"nome":"Dott.ssa Maria Esempio","ordine":"OPL","albo_n":"00000","piva":"01234567890","pec":"maria.esempio@pec.it"}}
+{
+  "schema_version": "v1",
+  "profession": "psicologo",
+  "branding": {
+    "name": "Studio di Psicologia Esempio",
+    "primary_color": "#2f5d50",
+    "phone": "+39 333 000 0000"
+  },
+  "hero": {
+    "title": "Supporto psicologico in studio e online",
+    "subtitle": "Colloqui individuali, di coppia e percorsi per la genitorialità. Approccio informativo, senza promesse di risultato."
+  },
+  "services": [
+    {
+      "name": "Colloquio individuale (50 min)",
+      "price": "€ 60"
+    },
+    {
+      "name": "Colloquio di coppia (60 min)",
+      "price": "€ 80"
+    },
+    {
+      "name": "Consulenza online (50 min)",
+      "price": "€ 60"
+    }
+  ],
+  "address": "Via Roma 1, 20121 Milano",
+  "booking": {
+    "type": "none"
+  },
+  "legal": {
+    "nome": "Dott.ssa Maria Esempio",
+    "ordine": "OPL",
+    "albo_n": "00000",
+    "piva": "01234567890",
+    "pec": "maria.esempio@pec.it"
+  }
+}

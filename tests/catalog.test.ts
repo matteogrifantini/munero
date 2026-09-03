@@ -13,4 +13,13 @@ describe('catalog', () => {
       expect(t.legal.piva).toBeTruthy();
     }
   });
+  it('psicologo v1 has booking none and informative services', () => {
+    const t = siteSchema.parse(psicologo);
+    expect(t.booking).toEqual({ type: 'none' });
+    expect(t.services.length).toBeGreaterThanOrEqual(3);
+    const blob = JSON.stringify(t).toLowerCase();
+    for (const banned of ['sconto', 'offerta', 'promo', 'garant', 'miglior', 'recension']) {
+      expect(blob).not.toContain(banned);
+    }
+  });
 });
