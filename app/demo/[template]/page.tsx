@@ -1,23 +1,18 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { siteSchema, type SiteConfig } from '@/lib/site-schema';
-import psicologo from '@/content/templates/psicologo.json';
-import barbiere from '@/content/templates/barbiere.json';
-
-const registry: Record<string, unknown> = { psicologo, barbiere };
-
-function getTemplate(name: string): SiteConfig {
-  const raw = registry[name];
-  if (!raw) notFound();
-  return siteSchema.parse(raw);
-}
+import { getTemplate, templateNames, type SiteConfig } from '@/lib/templates';
 
 export function generateStaticParams() {
-  return Object.keys(registry).map((template) => ({ template }));
+  return templateNames.map((template) => ({ template }));
 }
 
 export default function DemoPage({ params }: { params: { template: string } }) {
-  const site = getTemplate(params.template);
+  let site: SiteConfig;
+  try {
+    site = getTemplate(params.template);
+  } catch {
+    notFound();
+  }
   return (
     <main style={{ padding: 32 }}>
       <h1 style={{ color: site.branding.primary_color }}>{site.hero.title}</h1>
