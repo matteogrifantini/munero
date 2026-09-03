@@ -14,3 +14,8 @@ out/
 
 # next.js generated
 next-env.d.ts
+
+# opencode project mcp (personal)
+opencode.json
+# supabase cli temp
+supabase/.temp/
