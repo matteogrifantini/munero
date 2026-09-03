@@ -4,7 +4,7 @@ import { tryFastEdit } from '../lib/fast-edit';
 const base = { schema_version: 'v1' as const, profession: 'barbiere' as const,
   branding: { name: 'B', primary_color: '#111111', phone: '+39 333 000 0000' },
   hero: { title: 'T', subtitle: 'S' }, services: [{ name: 'Taglio', price: '€ 25' }],
-  address: 'Via Roma 1', legal: { nome: 'N', ordine: 'O', albo_n: '1', piva: '12345', pec: 'a@pec.it' } };
+  address: 'Via Roma 1', booking: { type: 'none' } as const, legal: { nome: 'N', ordine: 'O', albo_n: '1', piva: '12345', pec: 'a@pec.it' } };
 describe('fast-edit', () => {
   it('updates service price without tokens', () => {
     const r = tryFastEdit(base, 'cambia il prezzo del taglio a 28 euro');
