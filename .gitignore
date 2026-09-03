@@ -11,3 +11,6 @@ out/
 .vite/
 # tsc
 *.tsbuildinfo
+
+# next.js generated
+next-env.d.ts
