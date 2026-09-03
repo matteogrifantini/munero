@@ -7,3 +7,5 @@ out/
 .env*.local
 # OS
 .DS_Store
+# test cache
+.vite/
