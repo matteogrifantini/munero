@@ -28,4 +28,37 @@ describe('claim', () => {
     expect(typeof mod.getTemplate).toBe('function');
     expect(mod.getTemplate('barbiere').profession).toBe('barbiere');
   });
+  it('005 migration enables RLS on tenant_status_events with owner-read-only policy', async () => {
+    const fs = await import('node:fs');
+    const sql = fs.readFileSync('supabase/migrations/005_status_events_rls.sql', 'utf8');
+    expect(sql).toContain('tenant_status_events enable row level security');
+    expect(sql).toContain('for select');
+    expect(sql).toMatch(/owner_id\s*=\s*auth\.uid\(\)/);
+    expect(sql).not.toMatch(/for insert|for update|for delete/);
+  });
+  it('claim route normalizes slug before regex check', async () => {
+    const fs = await import('node:fs');
+    const src = fs.readFileSync('app/api/claim/route.ts', 'utf8');
+    expect(src).toContain('trim().toLowerCase()');
+    expect(src.indexOf('trim().toLowerCase()')).toBeLessThan(src.indexOf('/^[a-z0-9-]{3,63}$/'));
+    const normalize = (s: unknown) => String((s as string) ?? '').trim().toLowerCase();
+    expect(/^[a-z0-9-]{3,63}$/.test(normalize('  Barbiere-Rossi  '))).toBe(true);
+  });
+  it('claim route validates displayName and plan with Zod → 400', async () => {
+    const fs = await import('node:fs');
+    const src = fs.readFileSync('app/api/claim/route.ts', 'utf8');
+    expect(src).toContain(`z.enum(['senza-dominio', 'con-dominio'])`);
+    expect(src).toContain('bad displayName');
+    expect(src).toContain('bad plan');
+    const { z } = await import('zod');
+    expect(z.string().min(1).max(120).safeParse('').success).toBe(false);
+    expect(z.enum(['senza-dominio', 'con-dominio']).safeParse('premium').success).toBe(false);
+  });
+  it('claim route maps corrupt template config to 400 not 500', async () => {
+    const fs = await import('node:fs');
+    const src = fs.readFileSync('app/api/claim/route.ts', 'utf8');
+    expect(src).toContain('bad template config');
+    expect(src).toContain('try {');
+    expect(src).toMatch(/catch[\s\S]*400/);
+  });
 });

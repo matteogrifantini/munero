@@ -10,7 +10,6 @@ export default function ChatPage() {
   const [tenantId, setTenantId] = useState('');
   const [message, setMessage] = useState('');
   const [result, setResult] = useState<Result | null>(null);
-  const [confirmed, setConfirmed] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -25,7 +24,6 @@ export default function ChatPage() {
 
   async function send() {
     setResult(null);
-    setConfirmed(false);
     const res = await fetch('/api/chat-edit', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -53,14 +51,12 @@ export default function ChatPage() {
       <button onClick={send} disabled={!tenantId || !message}>Invia</button>
       {result?.blocked && <p>Bloccato: {result.reason}</p>}
       {result?.error && <p>Errore: {result.error}</p>}
-      {result?.verdict === 'applied' && !confirmed && (
+      {result?.verdict === 'applied' && (
         <div>
-          <p>Modifica proposta (via {result.via}):</p>
+          <p>Modifica applicata (via {result.via}).</p>
           <pre>{JSON.stringify(result.patch, null, 2)}</pre>
-          <button onClick={() => setConfirmed(true)}>Conferma anteprima</button>
         </div>
       )}
-      {confirmed && <p>Modifica applicata.</p>}
     </main>
   );
 }
