@@ -21,7 +21,8 @@ export async function middleware(req: NextRequest) {
       return NextResponse.rewrite(new URL('/sospeso', req.url));
     }
   }
-  if (status === 'suspended' || status === 'deleted') return NextResponse.rewrite(new URL('/sospeso', req.url));
+  // Fail-closed: only active/past_due_grace render; suspended/deleted/unknown -> /sospeso.
+  if (status !== 'active' && status !== 'past_due_grace') return NextResponse.rewrite(new URL('/sospeso', req.url));
   return NextResponse.next();
 }
 export const config = { matcher: ['/t/:slug*'] };
