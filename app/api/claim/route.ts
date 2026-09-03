@@ -9,7 +9,7 @@ const displayNameSchema = z.string().min(1).max(120);
 const planSchema = z.enum(['senza-dominio', 'con-dominio']);
 
 export async function POST(req: Request) {
-  const sb = supabaseServer();
+  const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const body = await req.json();

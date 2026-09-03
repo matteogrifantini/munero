@@ -7,7 +7,7 @@ import { checkDeontology } from '@/lib/guardrail';
 import { tryFastEdit } from '@/lib/fast-edit';
 const SYSTEM = `Sei l'assistente Munero. Rispondi SOLO con un JSON patch minimo per site_schema v1 (chiavi: branding, hero, services, address). Tono puramente informativo. Vietati sconti, offerte, superlativi, confronti, promesse di risultato (Legge 145/2018). Se la richiesta viola queste regole, rispondi {"__blocked__": true}.`;
 export async function POST(req: Request) {
-  const sb = supabaseServer();
+  const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const { tenantId, message } = (await req.json()) as { tenantId: string; message: string };
