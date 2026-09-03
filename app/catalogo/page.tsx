@@ -14,6 +14,7 @@ export default function CatalogoPage() {
           </li>
         ))}
       </ul>
+      <p><Link href="/wizard">Crea il tuo sito con la procedura guidata</Link></p>
     </main>
   );
 }
