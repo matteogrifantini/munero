@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { siteSchema } from '@/lib/site-schema';
-import SitePreview from '@/components/SitePreview';
+import SiteView from '@/components/SiteView';
 
 type Role = { role: string; blurb: string; variants: { key: string; name: string; blurb: string }[] };
 type ServiceRow = { name: string; price: string };
@@ -198,7 +198,7 @@ export default function WizardClient({ roles }: { roles: Role[] }) {
         </>
       ) : (
         <>
-          <SitePreview site={parsed.data} />
+          <SiteView site={parsed.data} />
           <h2>Pubblica</h2>
           <label>Indirizzo del sito (slug)<br /><input value={slug} onChange={(e) => setSlug(e.target.value)} /></label><br />
           <label><input type="radio" checked={plan === 'senza-dominio'} onChange={() => setPlan('senza-dominio')} /> Senza dominio</label><br />
