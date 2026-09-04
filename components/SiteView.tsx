@@ -136,6 +136,7 @@ export default function SiteView({ site }: { site: SiteConfig }) {
             {showAlbo ? <p>{showAlbo}</p> : null}
             <p>P.IVA {site.legal.piva}</p>
             <p>PEC {site.legal.pec}</p>
+            <p className="mt-2 text-xs"><a href="/" className="underline underline-offset-4">Realizzato con Munero</a></p>
           </div>
         </Container>
       </footer>

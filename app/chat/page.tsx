@@ -64,6 +64,17 @@ export default function ChatPage() {
               onChange={(e) => setMessage(e.target.value)}
               className={`${inputClasses} mb-4`}
             />
+            <div className="mb-4 flex flex-wrap gap-2">
+              {[
+                'cambia il prezzo del taglio a 28 euro',
+                'cambia indirizzo in Via Verdi 10, Torino',
+                'cambia telefono in +39 333 111 1111',
+              ].map((s) => (
+                <button key={s} type="button" onClick={() => setMessage(s)} className="rounded-full border border-stone-300 bg-white px-3 py-1.5 text-xs text-stone-700 transition hover:border-stone-400">
+                  {s}
+                </button>
+              ))}
+            </div>
             <MButton as="button" onClick={send} disabled={!tenantId || !message}>
               Invia
             </MButton>

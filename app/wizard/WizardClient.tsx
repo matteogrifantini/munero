@@ -274,6 +274,7 @@ export default function WizardClient({ roles, demoData }: { roles: Role[]; demoD
               <Card>
                 <h2 className="mb-3 font-display text-xl text-stone-900">Pubblica</h2>
                 <Field label="Indirizzo del sito (slug)" value={slug} onChange={(e) => setSlug(e.target.value)} />
+                <p className="mb-4 text-sm text-stone-600">Il tuo sito sarà: <span className="font-medium text-stone-900">{(slug.trim().toLowerCase() || 'iltuosito')}.munero.it</span></p>
                 <div className="mb-4 flex flex-col gap-2 text-sm text-stone-800">
                   <label className="flex items-center gap-2"><input type="radio" className="accent-stone-900" checked={plan === 'senza-dominio'} onChange={() => setPlan('senza-dominio')} /> Senza dominio</label>
                   <label className="flex items-center gap-2"><input type="radio" className="accent-stone-900" checked={plan === 'con-dominio'} onChange={() => setPlan('con-dominio')} /> Con dominio</label>
