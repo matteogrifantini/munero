@@ -7,10 +7,11 @@ export function generateStaticParams() {
   return templateNames.map((template) => ({ template }));
 }
 
-export default function DemoPage({ params }: { params: { template: string } }) {
+export default async function DemoPage({ params }: { params: Promise<{ template: string }> }) {
+  const { template } = await params;
   let site: SiteConfig;
   try {
-    site = getTemplate(params.template);
+    site = getTemplate(template);
   } catch {
     notFound();
   }
@@ -19,7 +20,7 @@ export default function DemoPage({ params }: { params: { template: string } }) {
       <SiteView site={site} />
       <Container>
         <div className="py-8">
-          <MButton href={`/attiva?template=${params.template}`}>Usa questo modello</MButton>
+          <MButton href={`/attiva?template=${template}`}>Usa questo modello</MButton>
         </div>
       </Container>
     </>

@@ -20,8 +20,8 @@ async function fetchRows<T>(path: string): Promise<T[] | null> {
   }
 }
 
-export default async function TenantPage({ params }: { params: { slug: string } }) {
-  const slug = params.slug;
+export default async function TenantPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   if (!/^[a-z0-9-]{3,63}$/.test(slug)) redirect('/sospeso');
 
   const tenants = await fetchRows<{ id: string; status: string }>(

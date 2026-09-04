@@ -19,3 +19,8 @@ next-env.d.ts
 opencode.json
 # supabase cli temp
 supabase/.temp/
+
+# playwright
+/playwright-report/
+/test-results/
+/e2e/shots/
