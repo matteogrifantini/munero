@@ -33,5 +33,7 @@ export function tryFastEdit(config: SiteConfig, message: string): { matched: boo
       return { matched: false, blocked: 'URL non valido: sono accettati solo link Cal.com (https://cal.com/… o https://cal.eu/…).' };
     return { matched: false };
   }
+  const hours = message.match(/(?:orari|orario)(?: di apertura)?(?: in| a|:)?\s*(.+)/i);
+  if (/orar/.test(msgLower) && hours) return { matched: true, patch: { hours: hours[1].trim().slice(0, 200) } };
   return { matched: false };
 }

@@ -6,7 +6,8 @@ const base = { schema_version: 'v1' as const, profession: 'psicologo' as const,
   branding: { name: 'Dott.ssa E', primary_color: '#2f5d50', phone: '+39 333 000 0000' },
   hero: { title: 'T', subtitle: 'S' }, services: [{ name: 'Colloquio', price: '€ 60' }],
   address: 'Via Roma 1, Milano', booking: { type: 'none' } as const,
-  legal: { nome: 'N', ordine: 'OPL', albo_n: '1', piva: '01234567890', pec: 'e@pec.it' } };
+  legal: { nome: 'N', ordine: 'OPL', albo_n: '1', piva: '01234567890', pec: 'e@pec.it' },
+  faq: [], hours: '' };
 describe('bookingSection', () => {
   it('hides on none', () => { expect(bookingSection(base)).toEqual({ kind: 'none' }); });
   it('builds calcom embed props', () => {

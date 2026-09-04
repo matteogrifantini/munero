@@ -60,6 +60,54 @@ export default function SiteView({ site }: { site: SiteConfig }) {
           </Container>
         </section>
 
+        {site.about ? (
+          <section className="pb-12">
+            <Container>
+              <SectionTitle title={site.about.title} />
+              <p className="text-base text-stone-700">{site.about.body}</p>
+              {site.about.points.length > 0 ? (
+                <ul className="mt-4 space-y-2">
+                  {site.about.points.map((p) => (
+                    <li key={p} className="flex items-start gap-2 text-sm text-stone-700">
+                      <span aria-hidden="true" className="font-bold text-[var(--accent)]">✓</span>
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </Container>
+          </section>
+        ) : null}
+
+        {site.hours ? (
+          <section className="pb-12">
+            <Container>
+              <HeroCard>
+                <HeroCard.Content className="p-5 sm:p-6">
+                  <SectionTitle title="Orari" />
+                  <p className="text-base text-stone-700">{site.hours}</p>
+                </HeroCard.Content>
+              </HeroCard>
+            </Container>
+          </section>
+        ) : null}
+
+        {site.faq.length > 0 ? (
+          <section className="pb-12">
+            <Container>
+              <SectionTitle title="Domande frequenti" />
+              <div className="space-y-3">
+                {site.faq.map((f) => (
+                  <details key={f.q} className="rounded-xl border border-stone-200 bg-white p-4">
+                    <summary className="cursor-pointer font-medium">{f.q}</summary>
+                    <p className="mt-2 text-sm text-stone-600">{f.a}</p>
+                  </details>
+                ))}
+              </div>
+            </Container>
+          </section>
+        ) : null}
+
         {prenota.kind === 'calcom' && (
           <section id="prenota" className="pb-12">
             <Container>

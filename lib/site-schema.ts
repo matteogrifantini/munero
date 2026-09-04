@@ -16,5 +16,12 @@ export const siteSchema = z.object({
     z.object({ type: z.literal('whatsapp'),
       number: z.string().regex(/^\+?[0-9 ]{6,20}$/) }),
   ]).default({ type: 'none' }),
+  about: z.object({
+    title: z.string().min(3).max(60),
+    body: z.string().min(10).max(1200),
+    points: z.array(z.string().min(2).max(120)).max(6),
+  }).optional(),
+  faq: z.array(z.object({ q: z.string().min(3).max(140), a: z.string().min(10).max(600) })).max(8).default([]),
+  hours: z.string().max(200).default(''),
 });
 export type SiteConfig = z.infer<typeof siteSchema>;
