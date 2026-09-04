@@ -62,6 +62,19 @@ test('unknown tenant manifest fail-closes with 404', async ({ request }) => {
   expect(r.status()).toBe(404);
 });
 
+test('sitemap lists public pages, robots protects app routes', async ({ request }) => {
+  const sm = await request.get('/sitemap.xml');
+  expect(sm.status()).toBe(200);
+  const xml = await sm.text();
+  expect(xml).toContain('/demo/psicologo');
+  expect(xml).toContain('/catalogo');
+  const rb = await request.get('/robots.txt');
+  expect(rb.status()).toBe(200);
+  const txt = await rb.text();
+  expect(txt).toContain('Disallow: /api/');
+  expect(txt).toContain('sitemap.xml');
+});
+
 test('chat unauthenticated prompts login', async ({ page }) => {
   const clean = await track(page);
   await page.goto('/chat');
