@@ -1,22 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --accent: #1e3d2b;
+@import "tailwindcss";
+@import "@heroui/styles";
+@theme {
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --color-paper: #faf8f4;
+  --color-ink: #1c1917;
+  --color-brand: #1e3d2b;
+  --color-brand-deep: #14291d;
+  --color-brand-gold: #c9a227;
 }
-
-body {
-  background-color: #faf8f4;
-  font-family: var(--font-sans), sans-serif;
-}
-
-::selection {
-  background-color: #c9a227;
-  color: #14291d;
-}
-
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
+:root { --accent: #1e3d2b; }
+body { background: #faf8f4; color: #1c1917; font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+::selection { background: #c9a227; color: #1c1917; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

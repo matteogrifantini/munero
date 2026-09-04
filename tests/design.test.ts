@@ -7,11 +7,12 @@ describe('design system', () => {
     expect(layout).toMatch(/Playfair Display|playfair/i);
     expect(fs.existsSync('components/ui.tsx')).toBe(true);
   });
-  it('theme exposes accent variable and brand colors', () => {
+  it('v4 theme tokens live in globals.css with heroui styles', () => {
     const css = fs.readFileSync('app/globals.css', 'utf8');
-    expect(css).toContain('--accent');
-    const tw = fs.readFileSync('tailwind.config.ts', 'utf8');
-    expect(tw).toMatch(/brand|1e3d2b/i);
+    expect(css.indexOf('@import "tailwindcss"')).toBeLessThan(css.indexOf('@import "@heroui/styles"'));
+    expect(css).toContain('@theme');
+    expect(css).toMatch(/--color-brand/);
+    expect(css).toMatch(/--font-display/);
   });
   it('ui exports all shell primitives', () => {
     const src = fs.readFileSync('components/ui.tsx', 'utf8');
