@@ -1,7 +1,12 @@
 import Link from 'next/link';
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, MouseEvent, ReactNode } from 'react';
 
 type AccentStyle = CSSProperties & { ['--accent']?: string };
+
+const primaryButtonClasses =
+  'inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50';
+const ghostButtonClasses =
+  'inline-flex items-center justify-center rounded-xl border border-stone-300 bg-transparent px-5 py-3 text-sm font-medium text-stone-900 transition hover:border-stone-400 disabled:cursor-not-allowed disabled:opacity-50';
 
 export function Container({
   children,
@@ -17,35 +22,40 @@ export function Container({
   );
 }
 
-export function MButton({
-  href,
-  children,
-  variant = 'primary',
-  accent,
-}: {
-  href: string;
+type MButtonProps = {
   children: ReactNode;
   variant?: 'primary' | 'ghost';
   accent?: string;
-}) {
+} & (
+  | { as?: 'link'; href: string }
+  | {
+      as: 'button';
+      href?: never;
+      type?: 'button' | 'submit';
+      disabled?: boolean;
+      onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
+    }
+);
+
+export function MButton(props: MButtonProps) {
+  const { children, variant = 'primary', accent } = props;
   const style = { ['--accent' as never]: accent } as AccentStyle;
-  if (variant === 'ghost') {
+  const className = variant === 'ghost' ? ghostButtonClasses : primaryButtonClasses;
+  if (props.as === 'button') {
     return (
-      <Link
-        href={href}
+      <button
+        type={props.type ?? 'button'}
+        onClick={props.onClick}
+        disabled={props.disabled}
         style={style}
-        className="inline-flex items-center justify-center rounded-xl border border-stone-300 bg-transparent px-5 py-3 text-sm font-medium text-stone-900 transition hover:border-stone-400"
+        className={className}
       >
         {children}
-      </Link>
+      </button>
     );
   }
   return (
-    <Link
-      href={href}
-      style={style}
-      className="inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-medium text-white transition hover:opacity-90"
-    >
+    <Link href={props.href} style={style} className={className}>
       {children}
     </Link>
   );
