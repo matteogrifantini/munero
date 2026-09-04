@@ -25,6 +25,34 @@
     }
   ],
   "address": "Via Roma 1, 20121 Milano",
+  "about": {
+    "title": "Chi sono",
+    "body": "Psicologa iscritta all'Ordine, con formazione in psicologia clinica. Riceve adulti e adolescenti in studio e online; il primo colloquio è conoscitivo ed è dedicato a comprendere la domanda e a illustrare tempi e modalità del percorso.",
+    "points": ["Iscritta all'Ordine degli Psicologi", "Colloqui in studio e online", "Adulti e adolescenti"]
+  },
+  "hours": "Lun – Ven 9:00 – 19:00, solo su appuntamento",
+  "faq": [
+    {
+      "q": "Quanto dura un colloquio?",
+      "a": "Il colloquio individuale dura circa 50 minuti, il colloquio di coppia circa 60 minuti. La durata viene concordata in anticipo."
+    },
+    {
+      "q": "Quanto costa un colloquio?",
+      "a": "Le tariffe sono esposte nella sezione servizi di questa pagina. Il primo colloquio è conoscitivo: serve a raccogliere la domanda e a illustrare tempi e modalità del percorso."
+    },
+    {
+      "q": "È possibile un colloquio online?",
+      "a": "Sì, i colloqui possono svolgersi in studio oppure in videochiamata, con le stesse modalità di prenotazione e la stessa durata."
+    },
+    {
+      "q": "I minorenni possono accedere ai colloqui?",
+      "a": "I colloqui con persone minorenni richiedono il consenso di entrambi i genitori o di chi esercita la responsabilità genitoriale, espresso prima del primo incontro."
+    },
+    {
+      "q": "Come sono trattati i miei dati?",
+      "a": "I dati personali sono trattati nel rispetto della normativa vigente. La titolare del trattamento è la professionista indicata nel piè di pagina; informazioni di dettaglio sono fornite prima del primo colloquio."
+    }
+  ],
   "booking": {
     "type": "none"
   },

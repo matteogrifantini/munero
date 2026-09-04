@@ -22,4 +22,16 @@ describe('catalog', () => {
       expect(blob).not.toContain(banned);
     }
   });
+  it('templates carry rich informative sections', () => {
+    for (const t of [psicologo, barbiere] as any[]) {
+      const c = siteSchema.parse(t);
+      expect(c.about!.body.length).toBeGreaterThan(50);
+      expect(c.faq!.length).toBeGreaterThanOrEqual(3);
+      expect(c.hours!.length).toBeGreaterThan(3);
+      const blob = JSON.stringify(c).toLowerCase();
+      for (const banned of ['sconto', 'offerta', 'promo', 'garant', 'miglior', 'recension', 'risultati garantiti']) {
+        expect(blob).not.toContain(banned);
+      }
+    }
+  });
 });
