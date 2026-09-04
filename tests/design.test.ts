@@ -20,4 +20,12 @@ describe('design system', () => {
       expect(src).toContain(n);
     }
   });
+  it('ui primitives are powered by heroui', () => {
+    const src = fs.readFileSync('components/ui.tsx', 'utf8');
+    expect(src).toMatch(/@heroui\/react/);
+    for (const n of ['Button', 'Card', 'Input', 'Header', 'Link']) {
+      expect(src).toContain(n);
+    }
+    expect(src).toContain('--accent');
+  });
 });

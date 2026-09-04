@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import type { CSSProperties, MouseEvent, ReactNode } from 'react';
+import { Button, Card as HeroCard, Header, Input, Label, Link, TextField } from '@heroui/react';
+import type { ChangeEvent, CSSProperties, MouseEvent, ReactNode } from 'react';
 
 type AccentStyle = CSSProperties & { ['--accent']?: string };
 
@@ -43,15 +43,15 @@ export function MButton(props: MButtonProps) {
   const className = variant === 'ghost' ? ghostButtonClasses : primaryButtonClasses;
   if (props.as === 'button') {
     return (
-      <button
+      <Button
         type={props.type ?? 'button'}
-        onClick={props.onClick}
-        disabled={props.disabled}
+        isDisabled={props.disabled}
+        onPress={(e) => props.onClick?.(e as unknown as MouseEvent<HTMLButtonElement>)}
         style={style}
         className={className}
       >
         {children}
-      </button>
+      </Button>
     );
   }
   return (
@@ -63,7 +63,9 @@ export function MButton(props: MButtonProps) {
 
 export function Card({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">{children}</div>
+    <HeroCard>
+      <HeroCard.Content className="p-6">{children}</HeroCard.Content>
+    </HeroCard>
   );
 }
 
@@ -92,18 +94,31 @@ export function SectionTitle({
 export function Field({
   label,
   error,
+  onChange,
+  value,
+  defaultValue,
+  name,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string }) {
-  const id = props.id ?? props.name;
+  const id = props.id ?? name;
   return (
-    <div className="mb-4">
-      <label htmlFor={id} className="mb-1 block text-sm font-medium text-stone-800">
+    <TextField
+      name={name}
+      value={value as string | undefined}
+      defaultValue={defaultValue as string | undefined}
+      onChange={(v) =>
+        onChange?.({ target: { value: v } } as unknown as ChangeEvent<HTMLInputElement>)
+      }
+      isInvalid={error ? true : undefined}
+      fullWidth
+      className="mb-4"
+    >
+      <Label htmlFor={id} className="mb-1 block text-sm font-medium text-stone-800">
         {label}
-      </label>
-      <input
+      </Label>
+      <Input
         id={id}
         {...props}
-        aria-invalid={error ? true : undefined}
         className="w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-[var(--accent)] focus:outline-none"
       />
       {error ? (
@@ -111,13 +126,13 @@ export function Field({
           {error}
         </p>
       ) : null}
-    </div>
+    </TextField>
   );
 }
 
 export function BrandHeader({ dashboardHref = '/dashboard' }: { dashboardHref?: string }) {
   return (
-    <header className="border-b border-stone-200 bg-[#faf8f4]">
+    <Header className="border-b border-stone-200 bg-[#faf8f4]">
       <Container size="wide">
         <div className="flex items-center justify-between py-4">
           <Link href="/" className="font-display text-2xl text-stone-900">
@@ -133,7 +148,7 @@ export function BrandHeader({ dashboardHref = '/dashboard' }: { dashboardHref?: 
           </nav>
         </div>
       </Container>
-    </header>
+    </Header>
   );
 }
 

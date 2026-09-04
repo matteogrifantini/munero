@@ -12,4 +12,9 @@ describe('siteview', () => {
       expect(fs.readFileSync(f, 'utf8')).toContain('SiteView');
     }
   });
+  it('siteview uses heroui primitives', () => {
+    const src = fs.readFileSync('components/SiteView.tsx', 'utf8');
+    expect(src).toMatch(/@heroui\/react/);
+    expect(src).toContain('--accent');
+  });
 });

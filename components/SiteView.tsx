@@ -1,7 +1,8 @@
 import type { CSSProperties } from 'react';
+import { Card as HeroCard, Chip, Header, Link, Separator } from '@heroui/react';
 import { bookingSection } from '@/lib/booking';
 import type { SiteConfig } from '@/lib/site-schema';
-import { Card, Container, SectionTitle } from './ui';
+import { Container, SectionTitle } from './ui';
 
 type AccentStyle = CSSProperties & { ['--accent']?: string };
 
@@ -16,19 +17,19 @@ export default function SiteView({ site }: { site: SiteConfig }) {
       style={{ ['--accent' as never]: site.branding.primary_color } as AccentStyle}
       className="min-h-screen bg-[#faf8f4] text-stone-900"
     >
-      <header className="sticky top-0 z-10 border-b border-stone-200 bg-[#faf8f4]/95 backdrop-blur">
+      <Header className="sticky top-0 z-10 border-b border-stone-200 bg-[#faf8f4]/95 backdrop-blur">
         <Container size="wide">
           <div className="flex items-center justify-between gap-4 py-3">
             <p className="truncate font-display text-lg">{site.branding.name}</p>
-            <a
+            <Link
               href={`tel:${site.branding.phone.replace(/\s/g, '')}`}
               className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
             >
               {site.branding.phone}
-            </a>
+            </Link>
           </div>
         </Container>
-      </header>
+      </Header>
 
       <main>
         <section className="py-12 sm:py-16">
@@ -49,14 +50,12 @@ export default function SiteView({ site }: { site: SiteConfig }) {
             <ul className="grid gap-4 sm:grid-cols-2">
               {site.services.map((s) => (
                 <li key={s.name}>
-                  <Card>
-                    <div className="flex items-center justify-between gap-3">
+                  <HeroCard>
+                    <HeroCard.Content className="flex items-center justify-between gap-3 p-5">
                       <p className="font-medium">{s.name}</p>
-                      <span className="shrink-0 rounded-full border border-stone-200 bg-[#faf8f4] px-3 py-1 text-sm font-medium text-stone-800">
-                        {s.price}
-                      </span>
-                    </div>
-                  </Card>
+                      <Chip className="shrink-0">{s.price}</Chip>
+                    </HeroCard.Content>
+                  </HeroCard>
                 </li>
               ))}
             </ul>
@@ -67,29 +66,31 @@ export default function SiteView({ site }: { site: SiteConfig }) {
           <section id="prenota" className="pb-12">
             <Container>
               <SectionTitle title="Prenota un appuntamento" />
-              <Card>
-                <div className="relative h-0 w-full overflow-hidden rounded-xl" style={{ paddingBottom: '62.5%' }}>
-                  <iframe
-                    src={prenota.embedUrl}
-                    title="Prenotazione"
-                    loading="lazy"
-                    className="absolute h-full w-full border-0"
-                  />
-                </div>
-                <p className="mt-4 text-sm text-stone-600">
-                  La prenotazione avviene su Cal.com. Munero non memorizza i tuoi dati.
-                </p>
-                <p className="mt-2 text-sm">
-                  <a
-                    href={prenota.openUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline text-[var(--accent)]"
-                  >
-                    Apri in una nuova scheda
-                  </a>
-                </p>
-              </Card>
+              <HeroCard>
+                <HeroCard.Content className="p-5 sm:p-6">
+                  <div className="relative h-0 w-full overflow-hidden rounded-xl" style={{ paddingBottom: '62.5%' }}>
+                    <iframe
+                      src={prenota.embedUrl}
+                      title="Prenotazione"
+                      loading="lazy"
+                      className="absolute h-full w-full border-0"
+                    />
+                  </div>
+                  <p className="mt-4 text-sm text-stone-600">
+                    La prenotazione avviene su Cal.com. Munero non memorizza i tuoi dati.
+                  </p>
+                  <p className="mt-2 text-sm">
+                    <Link
+                      href={prenota.openUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline text-[var(--accent)]"
+                    >
+                      Apri in una nuova scheda
+                    </Link>
+                  </p>
+                </HeroCard.Content>
+              </HeroCard>
             </Container>
           </section>
         )}
@@ -97,28 +98,34 @@ export default function SiteView({ site }: { site: SiteConfig }) {
           <section id="prenota" className="pb-12">
             <Container>
               <SectionTitle title="Prenota un appuntamento" />
-              <a
+              <Link
                 href={prenota.waLink}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-medium text-white transition hover:opacity-90"
               >
                 Contattaci su WhatsApp
-              </a>
+              </Link>
             </Container>
           </section>
         )}
 
         <section className="pb-12">
           <Container>
-            <Card>
-              <p className="font-medium">{site.address}</p>
-              <p className="mt-2 text-sm text-stone-600">
-                <a href={`tel:${site.branding.phone.replace(/\s/g, '')}`} className="underline">
-                  {site.branding.phone}
-                </a>
-              </p>
-            </Card>
+            <Separator className="mb-12" />
+            <HeroCard>
+              <HeroCard.Content className="p-5 sm:p-6">
+                <p className="font-medium">{site.address}</p>
+                <p className="mt-2 text-sm text-stone-600">
+                  <Link
+                    href={`tel:${site.branding.phone.replace(/\s/g, '')}`}
+                    className="underline"
+                  >
+                    {site.branding.phone}
+                  </Link>
+                </p>
+              </HeroCard.Content>
+            </HeroCard>
           </Container>
         </section>
       </main>
