@@ -4,6 +4,7 @@ import SiteView from '@/components/SiteView';
 import { BrandFooter, BrandHeader, Card, Container, MButton, SectionTitle } from '@/components/ui';
 
 const templates = templateNames.map((slug) => ({ slug, data: getTemplate(slug) }));
+const byRole = Object.fromEntries(templates.map((t) => [t.slug, t.data]));
 const roles = listRoles();
 
 export default function CatalogoPage() {
@@ -28,7 +29,7 @@ export default function CatalogoPage() {
                     <p className="mt-2 text-sm text-stone-600">{v.blurb}</p>
                     <div className="h-64 overflow-hidden rounded-xl border" aria-hidden="true">
                       <div className="pointer-events-none origin-top-left" style={{ transform: 'scale(0.4)', width: '250%' }}>
-                        <SiteView site={getTemplate(r.role)} />
+                        <SiteView site={byRole[r.role]} />
                       </div>
                     </div>
                     <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -36,8 +37,8 @@ export default function CatalogoPage() {
                         href={`/demo/${r.role}`}
                         className="text-sm font-medium text-stone-900 underline underline-offset-4"
                       >
-                        Vedi demo: {templates.find((t) => t.slug === r.role)?.data.branding.name ?? r.role} —{' '}
-                        {templates.find((t) => t.slug === r.role)?.data.hero.title}
+                        Vedi demo: {byRole[r.role]?.branding.name ?? r.role} —{' '}
+                        {byRole[r.role]?.hero.title}
                       </Link>
                       <MButton href="/wizard" variant="ghost">
                         Usa {v.name}

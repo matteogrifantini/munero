@@ -8,10 +8,8 @@ type AccentStyle = CSSProperties & { ['--accent']?: string };
 
 export default function SiteView({ site }: { site: SiteConfig }) {
   const prenota = bookingSection(site);
-  const showLegal =
-    site.legal.ordine !== '—' && site.legal.albo_n !== '—'
-      ? `${site.legal.ordine} n. ${site.legal.albo_n}`
-      : null;
+  const showOrdine = site.legal.ordine !== '—' ? site.legal.ordine : null;
+  const showAlbo = site.legal.albo_n !== '—' ? `Albo n. ${site.legal.albo_n}` : null;
   return (
     <div
       style={{ ['--accent' as never]: site.branding.primary_color } as AccentStyle}
@@ -134,7 +132,8 @@ export default function SiteView({ site }: { site: SiteConfig }) {
         <Container size="wide">
           <div className="flex flex-col gap-1 py-8 text-sm text-stone-600">
             <p className="font-display text-lg text-stone-900">{site.legal.nome}</p>
-            {showLegal ? <p>{showLegal}</p> : null}
+            {showOrdine ? <p>{showOrdine}</p> : null}
+            {showAlbo ? <p>{showAlbo}</p> : null}
             <p>P.IVA {site.legal.piva}</p>
             <p>PEC {site.legal.pec}</p>
           </div>

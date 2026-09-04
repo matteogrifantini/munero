@@ -60,6 +60,26 @@ export default async function Dashboard() {
               </Card>
             ))}
           </div>
+          <div className="mt-10">
+            <SectionTitle eyebrow="Servizi aggiuntivi" title="Fai crescere il tuo sito" description="Dominio, email e gestionale si attivano su richiesta, senza pensieri tecnici." />
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Card>
+                <h3 className="font-display text-xl text-stone-900">Dominio personalizzato</h3>
+                <p className="mt-2 text-sm text-stone-600">Il tuo www.nome.it al posto di slug.munero.it. Una tantum di attivazione + canone mensile.</p>
+                <p className="mt-3"><a href="mailto:info@munero.it?subject=Richiesta%20dominio%20personalizzato" className="text-sm font-medium underline underline-offset-4">Richiedi il dominio</a></p>
+              </Card>
+              <Card>
+                <h3 className="font-display text-xl text-stone-900">Email professionale</h3>
+                <p className="mt-2 text-sm text-stone-600">Caselle nome@cognome.it collegate al tuo dominio, configurate per te.</p>
+                <p className="mt-3"><a href="mailto:info@munero.it?subject=Richiesta%20email%20professionale" className="text-sm font-medium underline underline-offset-4">Richiedi le email</a></p>
+              </Card>
+              <Card>
+                <h3 className="font-display text-xl text-stone-900">Gestionale appuntamenti</h3>
+                <p className="mt-2 text-sm text-stone-600">Agenda avanzata oltre Cal.com: promemoria, anagrafiche clienti e statistiche.</p>
+                <p className="mt-3"><a href="mailto:info@munero.it?subject=Richiesta%20gestionale%20appuntamenti" className="text-sm font-medium underline underline-offset-4">Richiedi il gestionale</a></p>
+              </Card>
+            </div>
+          </div>
         </div>
       </Container>
       <BrandFooter />

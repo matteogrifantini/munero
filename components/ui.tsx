@@ -1,6 +1,7 @@
 import { Button, Card as HeroCard, Header, Input, Label, Link, TextField } from '@heroui/react';
 import NextLink from 'next/link';
 import type { ChangeEvent, CSSProperties, MouseEvent, ReactNode } from 'react';
+import { useId } from 'react';
 
 type AccentStyle = CSSProperties & { ['--accent']?: string };
 
@@ -106,9 +107,12 @@ export function Field({
   value,
   defaultValue,
   name,
+  id: idProp,
+  className,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string }) {
-  const id = props.id ?? name;
+  const autoId = useId();
+  const id = idProp ?? name ?? autoId;
   return (
     <TextField
       name={name}
@@ -127,7 +131,7 @@ export function Field({
       <Input
         id={id}
         {...props}
-        className="w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-[var(--accent)] focus:outline-none"
+        className={`w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-[var(--accent)] focus:outline-none ${className ?? ''}`}
       />
       {error ? (
         <p role="alert" className="mt-1 text-sm text-red-700">
