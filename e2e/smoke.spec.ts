@@ -75,6 +75,19 @@ test('sitemap lists public pages, robots protects app routes', async ({ request 
   expect(txt).toContain('sitemap.xml');
 });
 
+test('wizard click-through reaches rich info step with prefill', async ({ page }) => {
+  const clean = await track(page);
+  await page.goto('/wizard');
+  await page.getByRole('button', { name: /scegli psicologo/i }).click();
+  await page.getByRole('button', { name: /usa essenziale/i }).click();
+  await expect(page.getByText(/chi sono \(facoltativo\)/i)).toBeVisible();
+  await page.getByRole('button', { name: /riempi dati demo/i }).click();
+  await page.getByRole('button', { name: /vai all'anteprima/i }).click();
+  await expect(page.getByText(/studio-prova\.munero\.it/i)).toBeVisible();
+  await page.screenshot({ path: 'e2e/shots/wizard-rich.png' });
+  await clean();
+});
+
 test('chat unauthenticated prompts login', async ({ page }) => {
   const clean = await track(page);
   await page.goto('/chat');

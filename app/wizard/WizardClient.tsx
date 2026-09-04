@@ -21,6 +21,11 @@ export default function WizardClient({ roles, demoData }: { roles: Role[]; demoD
   const [subtitle, setSubtitle] = useState('');
   const [address, setAddress] = useState('');
   const [services, setServices] = useState<ServiceRow[]>([{ name: '', price: '' }]);
+  const [aboutTitle, setAboutTitle] = useState('');
+  const [aboutBody, setAboutBody] = useState('');
+  const [aboutPoints, setAboutPoints] = useState<string[]>(['', '', '']);
+  const [hours, setHours] = useState('');
+  const [faq, setFaq] = useState<{ q: string; a: string }[]>([{ q: '', a: '' }]);
   const [nome, setNome] = useState('');
   const [ordine, setOrdine] = useState('OPL');
   const [albo, setAlbo] = useState('');
@@ -46,6 +51,13 @@ export default function WizardClient({ roles, demoData }: { roles: Role[]; demoD
     services: services.filter((s) => s.name.trim() !== '' || s.price.trim() !== ''),
     address,
     booking,
+    about: aboutTitle.trim() === '' && aboutBody.trim() === '' && aboutPoints.every((p) => p.trim() === '')
+      ? undefined
+      : { title: aboutTitle, body: aboutBody, points: aboutPoints.map((p) => p.trim()).filter((p) => p !== '') },
+    hours,
+    faq: faq
+      .filter((f) => f.q.trim() !== '' || f.a.trim() !== '')
+      .map((f) => ({ q: f.q.trim(), a: f.a.trim() })),
     legal: { nome, ordine: isBarbiere ? '—' : ordine, albo_n: isBarbiere ? '—' : albo, piva, pec },
   };
   const parsed = siteSchema.safeParse(draft);
@@ -80,6 +92,12 @@ export default function WizardClient({ roles, demoData }: { roles: Role[]; demoD
     setTitle(demo.hero.title);
     setSubtitle(demo.hero.subtitle);
     setAddress(demo.address);
+    setAboutTitle(demo.about?.title ?? '');
+    setAboutBody(demo.about?.body ?? '');
+    const pts = demo.about?.points ?? [];
+    setAboutPoints([pts[0] ?? '', pts[1] ?? '', pts[2] ?? '']);
+    setHours(demo.hours ?? '');
+    setFaq(demo.faq && demo.faq.length > 0 ? demo.faq.map((f) => ({ q: f.q, a: f.a })) : [{ q: '', a: '' }]);
     setServices(demo.services.length > 0 ? demo.services.map((s) => ({ name: s.name, price: s.price })) : [{ name: '', price: '' }]);
     setNome(demo.legal.nome);
     setOrdine(demo.legal.ordine);
@@ -213,6 +231,35 @@ export default function WizardClient({ roles, demoData }: { roles: Role[]; demoD
               {services.length < 12 && (
                 <div className="mt-2">
                   <MButton as="button" variant="ghost" onClick={() => setServices((prev) => [...prev, { name: '', price: '' }])}>Aggiungi servizio</MButton>
+                </div>
+              )}
+              <h2 className="mb-3 mt-6 font-display text-xl text-stone-900">Chi sono (facoltativo)</h2>
+              <Field label="Titolo sezione" value={aboutTitle} onChange={(e) => setAboutTitle(e.target.value)} error={errText('about.title')} />
+              <label className="mb-1 block text-sm font-medium text-stone-800" htmlFor="wizard-about-body">Presentazione</label>
+              <textarea id="wizard-about-body" rows={4} value={aboutBody} onChange={(e) => setAboutBody(e.target.value)}
+                placeholder="Formazione, approccio, prima visita…" className={`${inputClasses} mb-4`} />
+              {err('about.body')}
+              {[0, 1, 2].map((i) => (
+                <Field key={i} label={`Punto di forza ${i + 1}`} value={aboutPoints[i] ?? ''} onChange={(e) => setAboutPoints((prev) => prev.map((p, j) => (j === i ? e.target.value : p)))} />
+              ))}
+              <h2 className="mb-3 mt-6 font-display text-xl text-stone-900">Orari</h2>
+              <Field label="Orari di apertura" value={hours} onChange={(e) => setHours(e.target.value)} placeholder="Lun – Ven 9:00 – 19:00" error={errText('hours')} />
+              <h2 className="mb-3 mt-6 font-display text-xl text-stone-900">Domande frequenti (facoltativo, max 5)</h2>
+              {faq.map((f, i) => (
+                <div key={i} className="mb-3 rounded-xl border border-stone-200 p-3">
+                  <Field label={`Domanda ${i + 1}`} value={f.q} onChange={(e) => setFaq((prev) => prev.map((r, j) => (j === i ? { ...r, q: e.target.value } : r)))} error={errText(`faq.${i}.q`)} />
+                  <label className="mb-1 block text-sm font-medium text-stone-800" htmlFor={`wizard-faq-a-${i}`}>Risposta {i + 1}</label>
+                  <textarea id={`wizard-faq-a-${i}`} rows={2} value={f.a} onChange={(e) => setFaq((prev) => prev.map((r, j) => (j === i ? { ...r, a: e.target.value } : r)))}
+                    className={`${inputClasses} mb-2`} />
+                  {err(`faq.${i}.a`)}
+                  {faq.length > 1 && (
+                    <MButton as="button" variant="ghost" onClick={() => setFaq((prev) => prev.filter((_, j) => j !== i))}>Rimuovi</MButton>
+                  )}
+                </div>
+              ))}
+              {faq.length < 5 && (
+                <div className="mt-2">
+                  <MButton as="button" variant="ghost" onClick={() => setFaq((prev) => [...prev, { q: '', a: '' }])}>Aggiungi domanda</MButton>
                 </div>
               )}
               <h2 className="mb-3 mt-6 font-display text-xl text-stone-900">Dati legali</h2>
