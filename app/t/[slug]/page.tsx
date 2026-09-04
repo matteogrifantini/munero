@@ -9,9 +9,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const loaded = await loadTenantSite(slug);
   if (!loaded) return {};
+  const description = loaded.site.hero.subtitle.slice(0, 160);
   return {
     title: loaded.site.branding.name,
+    description,
     manifest: `/t/${slug}/manifest`,
+    openGraph: { title: loaded.site.branding.name, description, type: 'website' },
   };
 }
 

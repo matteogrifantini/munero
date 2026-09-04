@@ -60,6 +60,12 @@ export default async function Dashboard() {
               </Card>
             ))}
           </div>
+          {(!data || data.length === 0) && (
+            <Card>
+              <p className="text-sm text-stone-700">Non hai ancora nessun sito. Parti dal catalogo o dalla procedura guidata: in pochi minuti sei online.</p>
+              <p className="mt-3"><MButton href="/wizard">Crea il tuo primo sito</MButton></p>
+            </Card>
+          )}
           <div className="mt-10">
             <SectionTitle eyebrow="Servizi aggiuntivi" title="Fai crescere il tuo sito" description="Dominio, email e gestionale si attivano su richiesta, senza pensieri tecnici." />
             <div className="grid gap-4 sm:grid-cols-3">
