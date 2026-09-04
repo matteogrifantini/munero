@@ -1,4 +1,5 @@
 import { Button, Card as HeroCard, Header, Input, Label, Link, TextField } from '@heroui/react';
+import NextLink from 'next/link';
 import type { ChangeEvent, CSSProperties, MouseEvent, ReactNode } from 'react';
 
 type AccentStyle = CSSProperties & { ['--accent']?: string };
@@ -52,6 +53,13 @@ export function MButton(props: MButtonProps) {
       >
         {children}
       </Button>
+    );
+  }
+  if (props.href.startsWith('/')) {
+    return (
+      <NextLink href={props.href} style={style} className={className}>
+        {children}
+      </NextLink>
     );
   }
   return (
@@ -135,16 +143,16 @@ export function BrandHeader({ dashboardHref = '/dashboard' }: { dashboardHref?: 
     <Header className="border-b border-stone-200 bg-[#faf8f4]">
       <Container size="wide">
         <div className="flex items-center justify-between py-4">
-          <Link href="/" className="font-display text-2xl text-stone-900">
+          <NextLink href="/" className="font-display text-2xl text-stone-900">
             Munero
-          </Link>
+          </NextLink>
           <nav className="flex items-center gap-4 text-sm">
-            <Link href="/catalogo" className="text-stone-700 hover:text-stone-900">
+            <NextLink href="/catalogo" className="text-stone-700 hover:text-stone-900">
               Catalogo
-            </Link>
-            <Link href={dashboardHref} className="text-stone-700 hover:text-stone-900">
+            </NextLink>
+            <NextLink href={dashboardHref} className="text-stone-700 hover:text-stone-900">
               Accedi/Dashboard
-            </Link>
+            </NextLink>
           </nav>
         </div>
       </Container>

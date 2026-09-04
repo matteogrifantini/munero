@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 const cache = new Map<string, { status: string; at: number }>();
 export default async function proxy(req: NextRequest) {
-  const m = req.nextUrl.pathname.match(/^\/t\/([a-z0-9-]+)/);
+  const pathname = req.nextUrl.pathname;
+  // Manifest endpoints fail closed on their own (JSON 404); skip the page rewrite.
+  if (pathname.endsWith('/manifest')) return NextResponse.next();
+  const m = pathname.match(/^\/t\/([a-z0-9-]+)/);
   if (!m) return NextResponse.next();
   const slug = m[1];
   const hit = cache.get(slug);

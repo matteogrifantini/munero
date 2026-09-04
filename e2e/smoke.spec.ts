@@ -57,6 +57,11 @@ test('wizard step 1 shows roles', async ({ page }) => {
   await clean();
 });
 
+test('unknown tenant manifest fail-closes with 404', async ({ request }) => {
+  const r = await request.get('/t/questo-slug-non-esiste-xyz/manifest');
+  expect(r.status()).toBe(404);
+});
+
 test('chat unauthenticated prompts login', async ({ page }) => {
   const clean = await track(page);
   await page.goto('/chat');
