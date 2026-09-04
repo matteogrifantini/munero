@@ -122,7 +122,7 @@ export default function Home() {
           <SectionTitle
             eyebrow="Piani"
             title="Prezzi"
-            description="Due piani, senza costi nascosti. I prezzi si definiscono con noi: scrivici e ti facciamo un preventivo."
+            description="Due piani. I prezzi si definiscono con noi: scrivici e ti facciamo un preventivo."
           />
           <div className="grid gap-4 sm:grid-cols-2">
             <Card>
