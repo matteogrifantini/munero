@@ -2,15 +2,16 @@
 import { useState } from 'react';
 import { Button } from '@heroui/react';
 import psicologoTemplate from '@/content/templates/psicologo.json';
+import type { SiteConfig } from '@/lib/site-schema';
 
 export default function DemoSiteButton({
   endpoint = '/api/create-site',
   slugPrefix = 'demo-',
-  config = psicologoTemplate,
+  config = psicologoTemplate as SiteConfig,
 }: {
   endpoint?: string;
   slugPrefix?: string;
-  config?: unknown;
+  config?: SiteConfig;
 }) {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
@@ -28,7 +29,7 @@ export default function DemoSiteButton({
           slug: demoSlug,
           displayName: 'Sito demo',
           plan: 'senza-dominio',
-          config: psicologoTemplate,
+          config,
         }),
       });
       const data = await res.json();
