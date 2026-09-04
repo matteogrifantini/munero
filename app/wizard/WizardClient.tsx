@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { siteSchema } from '@/lib/site-schema';
+import { siteSchema, type SiteConfig } from '@/lib/site-schema';
 import SiteView from '@/components/SiteView';
 import { BrandFooter, BrandHeader, Card, Container, Field, MButton, SectionTitle } from '@/components/ui';
 
@@ -10,7 +10,7 @@ type ServiceRow = { name: string; price: string };
 const inputClasses =
   'w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-[var(--accent)] focus:outline-none';
 
-export default function WizardClient({ roles }: { roles: Role[] }) {
+export default function WizardClient({ roles, demoData }: { roles: Role[]; demoData?: Record<string, SiteConfig> }) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [roleKey, setRoleKey] = useState('');
   const [variantKey, setVariantKey] = useState('');
@@ -69,6 +69,34 @@ export default function WizardClient({ roles }: { roles: Role[] }) {
     setOrdine(role === 'barbiere' ? '—' : 'OPL');
     setVariantKey('');
     setStep(2);
+  };
+
+  const fillDemo = () => {
+    const demo = demoData?.[roleKey] ?? demoData?.['psicologo'];
+    if (!demo) return;
+    setName(demo.branding.name);
+    setPhone(demo.branding.phone);
+    setColor(demo.branding.primary_color);
+    setTitle(demo.hero.title);
+    setSubtitle(demo.hero.subtitle);
+    setAddress(demo.address);
+    setServices(demo.services.length > 0 ? demo.services.map((s) => ({ name: s.name, price: s.price })) : [{ name: '', price: '' }]);
+    setNome(demo.legal.nome);
+    setOrdine(demo.legal.ordine);
+    setAlbo(demo.legal.albo_n);
+    setPiva(demo.legal.piva);
+    setPec(demo.legal.pec);
+    if (demo.booking.type === 'calcom') {
+      setBookingKind('calcom');
+      setBookingValue(demo.booking.url);
+    } else if (demo.booking.type === 'whatsapp') {
+      setBookingKind('whatsapp');
+      setBookingValue(demo.booking.number);
+    } else {
+      setBookingKind('none');
+      setBookingValue('');
+    }
+    setSlug('studio-prova');
   };
 
   const create = async () => {
@@ -158,6 +186,9 @@ export default function WizardClient({ roles }: { roles: Role[] }) {
           <div className="py-10">
             <SectionTitle eyebrow="Passo 3 di 4" title={`Informazioni sul sito (${roleKey})`} />
             <Card>
+              <div className="mb-4">
+                <MButton as="button" variant="ghost" onClick={fillDemo}>Riempi dati demo</MButton>
+              </div>
               <Field label="Nome attività" value={name} onChange={(e) => setName(e.target.value)} error={errText('branding.name')} />
               <Field label="Telefono" value={phone} onChange={(e) => setPhone(e.target.value)} error={errText('branding.phone')} />
               <Field label="Colore principale" type="color" value={color} onChange={(e) => setColor(e.target.value)} error={errText('branding.primary_color')} />

@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { supabaseServer } from '@/lib/supabase-server';
+import DemoSiteButton from '@/components/DemoSiteButton';
+import psicologoTemplate from '@/content/templates/psicologo.json';
 import { BrandFooter, BrandHeader, Card, Container, MButton, SectionTitle } from '@/components/ui';
 
 export default async function Dashboard() {
@@ -37,6 +39,7 @@ export default async function Dashboard() {
               Modifica con la chat AI
             </MButton>
             <MButton href="/wizard">Crea sito guidato</MButton>
+            <DemoSiteButton endpoint="/api/create-site" slugPrefix="demo-" config={psicologoTemplate} />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {(data ?? []).map((t) => (

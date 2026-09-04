@@ -1,6 +1,10 @@
 // app/wizard/page.tsx
-import { listRoles } from '@/lib/templates';
+import { getTemplate, listRoles, templateNames } from '@/lib/templates';
+import type { SiteConfig } from '@/lib/site-schema';
 import WizardClient from './WizardClient';
 export default function WizardPage() {
-  return <WizardClient roles={listRoles()} />;
+  const demoData = Object.fromEntries(
+    templateNames.map((role) => [role, getTemplate(role)]),
+  ) as Record<string, SiteConfig>;
+  return <WizardClient roles={listRoles()} demoData={demoData} />;
 }

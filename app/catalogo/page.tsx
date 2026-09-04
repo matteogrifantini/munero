@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getTemplate, listRoles, templateNames } from '@/lib/templates';
+import SiteView from '@/components/SiteView';
 import { BrandFooter, BrandHeader, Card, Container, MButton, SectionTitle } from '@/components/ui';
 
 const templates = templateNames.map((slug) => ({ slug, data: getTemplate(slug) }));
@@ -25,6 +26,11 @@ export default function CatalogoPage() {
                   <Card key={v.key}>
                     <h3 className="font-display text-xl text-stone-900">{v.name}</h3>
                     <p className="mt-2 text-sm text-stone-600">{v.blurb}</p>
+                    <div className="h-64 overflow-hidden rounded-xl border" aria-hidden="true">
+                      <div className="pointer-events-none origin-top-left" style={{ transform: 'scale(0.4)', width: '250%' }}>
+                        <SiteView site={getTemplate(r.role)} />
+                      </div>
+                    </div>
                     <div className="mt-4 flex flex-wrap items-center gap-3">
                       <Link
                         href={`/demo/${r.role}`}
