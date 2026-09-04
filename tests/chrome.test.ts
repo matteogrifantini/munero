@@ -25,4 +25,10 @@ describe('munero chrome', () => {
     expect(html).toMatch(/^<button/);
     expect(html).toContain('type="submit"');
   });
+  it('landing is rich: mockup, steps, pricing, faq', () => {
+    const src = fs.readFileSync('app/page.tsx', 'utf8');
+    for (const s of ['SiteView', 'Come funziona', 'Prezzi', 'Domande frequenti', 'senza-dominio', 'con-dominio']) {
+      expect(src).toContain(s);
+    }
+  });
 });

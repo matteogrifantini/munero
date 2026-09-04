@@ -32,6 +32,9 @@ export default async function Dashboard() {
       <Container size="wide">
         <div className="py-10">
           <SectionTitle eyebrow="Dashboard" title="I tuoi siti" />
+          <p className="mb-4 text-sm text-stone-600">
+            Hai {(data ?? []).length} siti ({(data ?? []).filter((t) => t.status !== 'active').length} sospesi)
+          </p>
           <div className="mb-6 flex flex-wrap gap-3">
             <MButton href="/catalogo" variant="ghost">
               Scegli un sito demo
